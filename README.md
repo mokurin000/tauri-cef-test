@@ -7,18 +7,40 @@ This template should help get you started developing with Tauri in vanilla HTML,
 ### Installation
 
 ```bash
+cef_version=$( cat src-tauri/Cargo.lock |
+   grep -A 1 'name = "cef"' |
+   tail -1 |
+   cut -d '"' -f 2 |
+   cut -d + -f 2 )
+file_name=$( curl -sSL https://cef-builds.spotifycdn.com/index.json |
+    tr ' ' '\n' |
+    grep "${cef_version}" |
+    grep linux64_minimal |
+    tr -d '",' )
+
 cef_dir="${HOME}/.local/share/cef"
-file_name=cef_binary_142.0.17+g60aac24+chromium-142.0.7444.176_linux64_minimal.tar.bz2
 
 aria2c -x 16 --out "${file_name}" "https://cef-builds.spotifycdn.com/${file_name}"
-git clone https://github.com/mokurin000/cef-rs --branch "fix/extract-archive-location" --depth 1 cef-rs
+
+if ! [ -d 'cef-rs' ]; then
+   git clone https://github.com/mokurin000/cef-rs --branch "fix/extract-archive-location" --depth 1 cef-rs
+fi
+
 (
    cd cef-rs
    cargo run -p export-cef-dir -- --archive "../${file_name}" --force "${cef_dir}"
 )
-rm -rf cef-rs/
-rm "${file_name}"
+rm -f "${file_name}"
 ```
+
+### Update `cef-rs` and libCEF
+
+```bash
+(cd src-tauri/ && cargo update)
+```
+
+And re-run installation commands.
+
 ### Setup environment
 
 ```bash
