@@ -10,16 +10,14 @@ This template should help get you started developing with Tauri in vanilla HTML,
 cef_dir="${HOME}/.local/share/cef"
 file_name=cef_binary_142.0.17+g60aac24+chromium-142.0.7444.176_linux64_minimal.tar.bz2
 
-mkdir -p "${cef_dir}"
-curl -Lo "${cef_dir}/${file_name}" "https://cef-builds.spotifycdn.com/${file_name}"
-sha1sum=$( sha1sum "${cef_dir}/${file_name}" | cut -d ' ' -f 1 )
-cat > "${cef_dir}/archive.json" <<EOF
-{
-   "name": "$file_name",
-   "type": "minimal",
-   "sha1": "$sha1sum"
-}
-EOF
+aria2c -x 16 --out "${file_name}" "https://cef-builds.spotifycdn.com/${file_name}"
+git clone https://github.com/mokurin000/cef-rs --branch "fix/extract-archive-location" --depth 1 cef-rs
+(
+   cd cef-rs
+   cargo run -p export-cef-dir -- --archive "../${file_name}" --force "${cef_dir}"
+)
+rm -rf cef-rs/
+rm "${file_name}"
 ```
 ### Setup environment
 
