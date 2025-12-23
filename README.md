@@ -23,7 +23,7 @@ cef_dir="${HOME}/.local/share/cef"
 aria2c -x 16 --out "${file_name}" "https://cef-builds.spotifycdn.com/${file_name}"
 
 if ! [ -d 'cef-rs' ]; then
-   git clone https://github.com/mokurin000/cef-rs --branch "fix/extract-archive-location" --depth 1 cef-rs
+   git clone https://github.com/tauri-apps/cef-rs --branch "dev" --depth 1 cef-rs
 fi
 
 (
